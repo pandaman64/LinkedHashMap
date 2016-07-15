@@ -34,9 +34,7 @@ class LinkedHashMap(Key,Value){
 		return typeid(Key).getHash(k);
 	}
 
-	void add(Key k,Value v){
-		const hash = calcHash(&k);
-		const index = hash % buckets.length;
+	private EntryType newEntry(Key k,Value v){
 		auto entry = new EntryType(k,v,last);
 
 		if(first is null){
@@ -46,6 +44,14 @@ class LinkedHashMap(Key,Value){
 			last.insertion_next = entry;
 		}
 		last = entry;
+
+		return entry;
+	}
+
+	void add(Key k,Value v){
+		const hash = calcHash(&k);
+		const index = hash % buckets.length;
+		auto entry = newEntry(k,v);
 
 		if(buckets[index] is null){
 			buckets[index] = entry;
@@ -84,69 +90,41 @@ class LinkedHashMap(Key,Value){
 	Value opIndex(Key k){
 		const index = calcHash(&k) % buckets.length;
 		if(buckets[index] is null){
-			auto newEntry = new EntryType(k,Value(),last);
-			if(first is null){
-				first = newEntry;
-			}
-			if(last !is null){
-				last.insertion_next = newEntry;
-			}
-			last = newEntry;
-			buckets[index] = newEntry;
-			return newEntry.value;
+			auto entry = newEntry(k,Value());
+			buckets[index] = entry;
+			return entry.value;
 		}
 		else{
-			auto entry = buckets[index];
-			while(entry.bucket_next !is null){
-				if(entry.key == k){
-					return entry.value;
+			auto e = buckets[index];
+			while(e.bucket_next !is null){
+				if(e.key == k){
+					return e.value;
 				}
 			}
-			auto newEntry = new EntryType(k,Value(),last);
-			if(first is null){
-				first = newEntry;
-			}
-			if(last !is null){
-				last.insertion_next = newEntry;
-			}
-			last = newEntry;
-			entry.bucket_next = newEntry;
-			return newEntry.value;
+			auto entry = newEntry(k,Value());
+			e.bucket_next = entry;
+			return entry.value;
 		}
 	}
 
 	Value opIndexAssign(Value v,Key k){
 		const index = calcHash(&k) % buckets.length;
 		if(buckets[index] is null){
-			auto newEntry = new EntryType(k,v,last);
-			if(first is null){
-				first = newEntry;
-			}
-			if(last !is null){
-				last.insertion_next = newEntry;
-			}
-			last = newEntry;
-			buckets[index] = newEntry;
-			return newEntry.value;
+			auto entry = newEntry(k,v);
+			buckets[index] = entry;
+			return entry.value;
 		}
 		else{
-			auto entry = buckets[index];
-			while(entry.bucket_next !is null){
-				if(entry.key == k){
-					entry.value = v;
-					return entry.value;
+			auto e = buckets[index];
+			while(e.bucket_next !is null){
+				if(e.key == k){
+					e.value = v;
+					return e.value;
 				}
 			}
-			auto newEntry = new EntryType(k,v,last);
-			if(first is null){
-				first = newEntry;
-			}
-			if(last !is null){
-				last.insertion_next = newEntry;
-			}
-			last = newEntry;
-			entry.bucket_next = newEntry;
-			return newEntry.value;
+			auto entry = newEntry(k,v);
+			e.bucket_next = entry;
+			return entry.value;
 		}
 	}
 
