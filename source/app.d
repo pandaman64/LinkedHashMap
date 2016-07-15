@@ -1,6 +1,9 @@
 import std.stdio;
 import std.typecons;
 import std.conv;
+import std.range;
+import std.algorithm;
+import std.traits;
 
 class Entry(Key,Value){
 	Key key;
@@ -79,23 +82,37 @@ class LinkedHashMap(Key,Value){
 	}
 
 	struct Range{
-		EntryType current;
+		alias ValueType = Tuple!(Key,Value);
+		
+		EntryType first,last;
 
-		bool empty() const{
-			return current is null;
+		bool empty(){
+			return first is null || first.insertion_prev == last;
 		}
 
 		void popFront(){
-			current = current.insertion_next;
+			first = first.insertion_next;
 		}
 
-		Tuple!(Key,Value) front(){
-			return Tuple!(Key,Value)(current.key,current.value);
+		void popBack(){
+			last = last.insertion_prev;
+		}
+
+		ValueType front(){
+			return ValueType(first.key,first.value);
+		}
+
+		ValueType back(){
+			return ValueType(last.key,last.value);
+		}
+
+		Range save(){
+			return Range(first,last);
 		}
 	}
 
 	auto range(){
-		return Range(first);
+		return Range(first,last);
 	}
 }
 
@@ -108,6 +125,10 @@ void main()
 	map.get("abc",4).writeln;
 
 	foreach(const v;map.range){
+		v.writeln;
+	}
+
+	foreach_reverse(const v;map.range){
 		v.writeln;
 	}
 }
