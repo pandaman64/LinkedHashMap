@@ -1,0 +1,8 @@
+{
+	"name": "LinkedHashMap",
+	"description": "D Implementation of LinkedHashMap, which preserves the insertion order of elements",
+	"copyright": "Copyright © 2016, pandaman64",
+	"authors": ["pandaman64"],
+	"dependencies": {
+	}
+}
