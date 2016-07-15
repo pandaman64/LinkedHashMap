@@ -82,7 +82,7 @@ class LinkedHashMap(Key,Value){
 	}
 
 	struct Range{
-		alias ValueType = Tuple!(Key,Value);
+		alias ValueType = Tuple!(const(Key),Value);
 		
 		EntryType first,last;
 
