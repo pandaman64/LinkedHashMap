@@ -81,6 +81,75 @@ class LinkedHashMap(Key,Value){
 		}
 	}
 
+	Value opIndex(Key k){
+		const index = calcHash(&k) % buckets.length;
+		if(buckets[index] is null){
+			auto newEntry = new EntryType(k,Value(),last);
+			if(first is null){
+				first = newEntry;
+			}
+			if(last !is null){
+				last.insertion_next = newEntry;
+			}
+			last = newEntry;
+			buckets[index] = newEntry;
+			return newEntry.value;
+		}
+		else{
+			auto entry = buckets[index];
+			while(entry.bucket_next !is null){
+				if(entry.key == k){
+					return entry.value;
+				}
+			}
+			auto newEntry = new EntryType(k,Value(),last);
+			if(first is null){
+				first = newEntry;
+			}
+			if(last !is null){
+				last.insertion_next = newEntry;
+			}
+			last = newEntry;
+			entry.bucket_next = newEntry;
+			return newEntry.value;
+		}
+	}
+
+	Value opIndexAssign(Value v,Key k){
+		const index = calcHash(&k) % buckets.length;
+		if(buckets[index] is null){
+			auto newEntry = new EntryType(k,v,last);
+			if(first is null){
+				first = newEntry;
+			}
+			if(last !is null){
+				last.insertion_next = newEntry;
+			}
+			last = newEntry;
+			buckets[index] = newEntry;
+			return newEntry.value;
+		}
+		else{
+			auto entry = buckets[index];
+			while(entry.bucket_next !is null){
+				if(entry.key == k){
+					entry.value = v;
+					return entry.value;
+				}
+			}
+			auto newEntry = new EntryType(k,v,last);
+			if(first is null){
+				first = newEntry;
+			}
+			if(last !is null){
+				last.insertion_next = newEntry;
+			}
+			last = newEntry;
+			entry.bucket_next = newEntry;
+			return newEntry.value;
+		}
+	}
+
 	struct Range{
 		alias ValueType = Tuple!(const(Key),Value);
 		
@@ -121,8 +190,10 @@ void main()
     auto map = new LinkedHashMap!(string,int)();
 	map.add("abc",1);
 	map.add("bbb",3);
+	map["hoge"] = 6;
 
-	map.get("abc",4).writeln;
+	map["abc"].writeln;
+	map.get("ccc",4).writeln;
 
 	foreach(const v;map.range){
 		v.writeln;
